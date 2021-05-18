@@ -3,6 +3,10 @@ import {Dirent} from 'fs';
 const slugify = require('slugify');
 const fs = require('fs').promises;
 const path = require('path');
+
+export const  wait = async (ms: number) => {
+    return new Promise( (resolve) => {setTimeout(resolve, ms)});
+}
 /**
  * getFiles returns a list of all files in a directory path {dirPath}
  * that match a given file extension {fileExt} (optional).
