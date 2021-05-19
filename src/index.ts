@@ -49,8 +49,6 @@ const main = async (): Promise<string> => {
         result = await connectionPRESS.query(sql);
 
         const TranslatedArr = result[0];
-        //const TranslatedArr = [310,311];
-        //const TranslatedArr = [3];
         const TranslatedArrIdx = TranslatedArr.map( (el: any) => el.translate_from);
         let srcArrFiltered = srcArr.filter( (elem1: any) => !TranslatedArrIdx.includes(elem1.id));
 
