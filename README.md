@@ -1,55 +1,46 @@
-# gtranslate - google translate proxy based on fastify web server
+# post-tr-bbabo - client for gtranslate proxy
 
 #### Clone & Install Dependencies
 ```bash
-git clone https://github.com/dsunegin/gtranslate
-cd post-bankru
+git clone https://github.com/dsunegin/post-tr-bbabo
+cd post-tr-bbabo
 npm install
 ```
 
-Configure:
+Configure your env:
 ```
-const PORT = 8085;
-const PAGES_NUM = 1;
-const PAGE_TIMEOUT = 60000;
+cp .env.example .env
 ```
 
-## Running `gtranslate`
+#### Specify environment in .env file:
 
-Either configure `gtranslate` to run by pm2 (node process manager) or manually start the `gtranslate` process.
+```
+DB_PRESSHOST="localhost"
+DB_PRESSPORT=3306
+DB_PRESSUSER="press_user"
+DB_PRESSDATABASE="press"
+DB_PRESSPASSWORD="psw_press_user"
+BEARER = "BEARER_PASSWORD"
+```
 
-To manually start `gtranslate` once it is installed:
+## Running `post-tr-bbabo`
+
+Either configure `post-tr-bbabo` to run by pm2 (node process manager) or manually start the `post-tr-bbabo` process.
+
+To manually start `post-tr-bbabo` once it is installed:
 
 ```bash
 npm run compile
 npm run start
 ```
 
-### Start the pm2 
+### Start the pm2 with cron 
 
 ```bash
 npm run compile
-./pm2-gtranslate.sh
+./pm2-post-tr-bbabo.sh
 ```
  
-You must have installed pm2 process manager to run pm2-gtranslate.sh script.
-
-## *Notice
-
-Fastify hc-pages Plugin used in project is written  for node 14.0 and later.
-
-To avoid error in node version < 14.0 modify line 90:60 (hc-pages.js):
-
-const browser = await puppeteer_1.launch(launchOptions ?? defaultLaunchOptions);
-
-to ->
-
-const browser = await puppeteer_1.launch(launchOptions || defaultLaunchOptions);
-
-in fastify-hc-pages Plugin file:
- 
-node_modules\@uyamazak\fastify-hc-pages\dist\src\hc-pages.js
-
 
 ## Contact
 Denis Sunegin `dsunegin@gmail.com`
