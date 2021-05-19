@@ -86,6 +86,8 @@ const main = async (): Promise<string> => {
         PostContent = PostContent.replace(/\&nbsp\;/igs, '');
         PostContent = PostContent.replace(/\&laquo\;/igs, '');
         PostContent = PostContent.replace(/\&raquo\;/igs, '');
+        PostContent = PostContent.replace(/\&ldquo\;/igs, '');
+        PostContent = PostContent.replace(/\&rdquo\;/igs, '');
         PostContent = PostContent.replace(/\&mdash\;/igs, '');
         PostContent = PostContent.replace(/\&ndash\;/igs, '');
         PostContent = PostContent.replace(/\&lt\;/igs, '');
@@ -96,6 +98,13 @@ const main = async (): Promise<string> => {
         const PostTitle: string = await translateApi.translate({tl:'en',text:srcArticle['title']});
         await assets.wait(2000);
         let tr_text = await  translateApi.translate({tl:'en',text:PostContent});
+
+        // correct translated text
+        tr_text = tr_text.replace(/\<\s\/\sP>/igs, '</p>');
+        tr_text = tr_text.replace(/\<\s\/P>/igs, '</p>');
+        tr_text = tr_text.replace(/\<\sP>/igs, '<p>');
+        tr_text = tr_text.replace(/\<\sP\s>/igs, '<p>');
+        tr_text = tr_text.replace(/\<\s\/\sspan>/igs, '</span>');
 
         //if (tr_text.length < 2000) {tr_text.replace(/\./igs, '</p><p>');};
 
