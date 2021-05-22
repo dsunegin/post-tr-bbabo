@@ -13,15 +13,16 @@ if (envconf.error) {
 } // ERROR if Config .env file is missing
 
 const Categories = [
-    {
-        langDB: 'ru-RU',
-        category: [87, 88, 112, 89, 90, 93],
-        lang: 'ru'
-    },
+
     {   langDB: 'en-GB',
         category: [94, 95, 114, 96, 98, 99],
         lang: 'en'
     },
+    {
+        langDB: 'fr-FR',
+        category: [118, 119, 120, 121, 122, 123],
+        lang: 'fr'
+    }
 ];
 
 
