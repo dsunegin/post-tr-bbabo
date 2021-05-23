@@ -87,11 +87,15 @@ const main = async (): Promise<string> => {
         PostContent = PostContent.replace(/\&raquo\;/igs, '');
         PostContent = PostContent.replace(/\&ldquo\;/igs, '');
         PostContent = PostContent.replace(/\&rdquo\;/igs, '');
+        PostContent = PostContent.replace(/\&lsquo\;/igs, '');
+        PostContent = PostContent.replace(/\&rsquo\;/igs, '');
         PostContent = PostContent.replace(/\&mdash\;/igs, '');
         PostContent = PostContent.replace(/\&ndash\;/igs, '');
         PostContent = PostContent.replace(/\&lt\;/igs, '');
         PostContent = PostContent.replace(/\&gt\;/igs, '');
         PostContent = PostContent.replace(/\&amp\;/igs, '');
+
+
 
         translateApi.setToken(process.env.BEARER || 'default_Bearer');
         let PostTitle: string = await translateApi.translate({tl: Categories[1].lang, text: srcArticle['title']});
@@ -103,15 +107,19 @@ const main = async (): Promise<string> => {
         let tr_text = await  translateApi.translate({tl: Categories[1].lang, text: PostContent});
 
         // correct translated text
-        tr_text = tr_text.replace(/\<\s\/\sP>/igs, '</p>');
-        tr_text = tr_text.replace(/\<\s\/P>/igs, '</p>');
-        tr_text = tr_text.replace(/\<\sP>/igs, '<p>');
-        tr_text = tr_text.replace(/\<\sP\s>/igs, '<p>');
-        tr_text = tr_text.replace(/\<\s\/\sspan>/igs, '</span>');
+        tr_text = tr_text.replace(/\<.?\/.?P>/igms, '</p>');
+        tr_text = tr_text.replace(/\<.?\/.?p>/igms, '</p>');
+        tr_text = tr_text.replace(/\<\s\/P>/igms, '</p>');
+        tr_text = tr_text.replace(/\<\sP>/igms, '<p>');
+        tr_text = tr_text.replace(/\<\sP\s>/igms, '<p>');
+        tr_text = tr_text.replace(/\<.?\/.?span>/igms, '</span>');
+
+        tr_text = tr_text.replace(/\&?.?livre;/igs, '€');
 
         //if (tr_text.length < 2000) {tr_text.replace(/\./igs, '</p><p>');};
 
-        let trPostContent = `<img src="${PostImgSrc}" />  <p>${tr_text}</p>`;
+        //let trPostContent = `<img src="${PostImgSrc}" />  <p>${tr_text}</p>`;
+        let trPostContent = `<img src="${PostImgSrc}" />  ${tr_text}`;
 
         const now: Date = new Date(); // Now
         const aliasUniq: string = '-' + crc16(now.toString()).toString(16);

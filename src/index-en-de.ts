@@ -13,15 +13,16 @@ if (envconf.error) {
 } // ERROR if Config .env file is missing
 
 const Categories = [
-    {
-        langDB: 'ru-RU',
-        category: [87, 88, 112, 89, 90, 93],
-        lang: 'ru'
-    },
+
     {   langDB: 'en-GB',
         category: [94, 95, 114, 96, 98, 99],
         lang: 'en'
     },
+    {
+        langDB: 'de-DE',
+        category: [130, 131, 132, 133, 134, 135],
+        lang: 'de'
+    }
 ];
 
 
@@ -94,6 +95,8 @@ const main = async (): Promise<string> => {
         PostContent = PostContent.replace(/\&gt\;/igs, '');
         PostContent = PostContent.replace(/\&amp\;/igs, '');
 
+
+
         translateApi.setToken(process.env.BEARER || 'default_Bearer');
         let PostTitle: string = await translateApi.translate({tl: Categories[1].lang, text: srcArticle['title']});
         if (PostTitle.length > 100) {PostTitle = PostTitle.split('-',1).join(''); }
@@ -110,6 +113,8 @@ const main = async (): Promise<string> => {
         tr_text = tr_text.replace(/\<\sP>/igms, '<p>');
         tr_text = tr_text.replace(/\<\sP\s>/igms, '<p>');
         tr_text = tr_text.replace(/\<.?\/.?span>/igms, '</span>');
+
+        tr_text = tr_text.replace(/\&?.?livre;/igs, '€');
 
         //if (tr_text.length < 2000) {tr_text.replace(/\./igs, '</p><p>');};
 
