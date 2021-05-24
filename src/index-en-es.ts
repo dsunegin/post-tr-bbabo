@@ -19,9 +19,9 @@ const Categories = [
         lang: 'en'
     },
     {
-        langDB: 'de-DE',
-        category: [130, 131, 132, 133, 134, 135],
-        lang: 'de'
+        langDB: 'es-ES',
+        category: [140, 141, 142, 143, 144, 145],
+        lang: 'es'
     }
 ];
 

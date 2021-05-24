@@ -46,7 +46,7 @@ const main = async (): Promise<string> => {
         if (result[0].length == 0) return "NO Source Articles DATA";
         const srcArr = result[0];
 
-        sql = `SELECT id, translate_from FROM os0fr_content WHERE translate_from > 0`;
+        sql = `SELECT id, translate_from FROM os0fr_content WHERE translate_from > 0 && language='${Categories[1].langDB}'`;
         result = await connectionPRESS.query(sql);
 
         const TranslatedArr = result[0];
@@ -109,12 +109,16 @@ const main = async (): Promise<string> => {
         // correct translated text
         tr_text = tr_text.replace(/\<.?\/.?P>/igms, '</p>');
         tr_text = tr_text.replace(/\<.?\/.?p>/igms, '</p>');
+        tr_text = tr_text.replace(/\<.?p>/igms, '<p>');
         tr_text = tr_text.replace(/\<\s\/P>/igms, '</p>');
         tr_text = tr_text.replace(/\<\sP>/igms, '<p>');
         tr_text = tr_text.replace(/\<\sP\s>/igms, '<p>');
         tr_text = tr_text.replace(/\<.?\/.?span>/igms, '</span>');
 
         tr_text = tr_text.replace(/\&?.?livre;/igs, '€');
+
+        tr_text = tr_text.replace(/\.\,/igms, '.');
+        tr_text = tr_text.replace(/\,\./igms, '.');
 
         //if (tr_text.length < 2000) {tr_text.replace(/\./igs, '</p><p>');};
 
