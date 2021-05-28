@@ -125,9 +125,10 @@ const main = async (): Promise<string> => {
         //let trPostContent = `<img src="${PostImgSrc}" />  <p>${tr_text}</p>`;
         let trPostContent = `<img src="${PostImgSrc}" />  ${tr_text}`;
 
-        const now: Date = new Date(); // Now
-        const aliasUniq: string = '-' + crc16(now.toString()).toString(16);
-        const alias = assets.aliasSlug(PostTitle) + aliasUniq;
+        //const now: Date = new Date(); // Now
+        //const aliasUniq: string = '-' + crc16(now.toString()).toString(16);
+        //const alias = assets.aliasSlug(PostTitle) + aliasUniq;
+        const alias = assets.aliasSlug(PostTitle);
 
         //let tr_test = await  translateApi.test();
         //let tr_text = await  translateApi.translate({tl:'ru',text:'Hello'});

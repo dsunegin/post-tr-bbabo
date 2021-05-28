@@ -66,7 +66,7 @@ const main = async (): Promise<string> => {
             if (aText.indexOf('<table')>=0) { srcArrFiltered.shift(); srcArticleId = null; continue;}
             if (aText.indexOf('watch?v=')>=0) { srcArrFiltered.shift(); srcArticleId = null; continue;}
         }
-
+        //const aliasq = assets.aliasSlug(srcArticle['title']);
         const srcArticleCatId = srcArticle['catid'];
         const trArticleCatId = Categories[1].category[Categories[0].category.indexOf(srcArticleCatId)];
 
@@ -125,9 +125,9 @@ const main = async (): Promise<string> => {
         //let trPostContent = `<img src="${PostImgSrc}" />  <p>${tr_text}</p>`;
         let trPostContent = `<img src="${PostImgSrc}" />  ${tr_text}`;
 
-        const now: Date = new Date(); // Now
-        const aliasUniq: string = '-' + crc16(now.toString()).toString(16);
-        const alias = assets.aliasSlug(PostTitle) + aliasUniq;
+        //const now: Date = new Date(); // Now
+        //const aliasUniq: string = '-' + crc16(now.toString()).toString(16);
+        const alias = assets.aliasSlug(PostTitle);
 
         //let tr_test = await  translateApi.test();
         //let tr_text = await  translateApi.translate({tl:'ru',text:'Hello'});

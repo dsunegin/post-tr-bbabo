@@ -3,6 +3,7 @@ import {Dirent} from 'fs';
 const slugify = require('slugify');
 const fs = require('fs').promises;
 const path = require('path');
+const {crc16} = require('crc');
 
 export const  wait = async (ms: number) => {
     return new Promise( (resolve) => {setTimeout(resolve, ms)});
@@ -51,10 +52,10 @@ export const getRandomIntInclusive = (min: number, max: number) => {
   ); /*Максимум и минимум включаются */
 };
 
-export const aliasSlug = (text: string): string => {
+export const aliasSlug = (text: string, uniq: boolean = true): string => {
   return slugify(text, {
     remove: /[*+~.()'"!:@]/g, //  to remove *+~.()'"!:@ from the result slug
     lower: true, // convert to lower case, defaults to `false`
     strict: true, // strip special characters except replacement, defaults to `false`
-  });
+  }) + ( (uniq) ? '-' + crc16((new Date()).toString()).toString(16) : '');
 };
