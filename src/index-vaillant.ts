@@ -55,8 +55,8 @@ const main = async (): Promise<string> => {
         let srcArticle = result[0][0];
 
         let PostTitle = `Технологии Vailant: ${srcArticle.NAME}`;
-        //let PostImgSrc = await assets.getRandomImage('/var/www/html-bublbe/images/www/vaillant/technology');
-        let PostImgSrc = '/var/www/html-bublbe/images/www/vaillant/technology/vaillant-tech0003.jpg';
+        //let PostImgSrc = '/var/www/html-bublbe/images/www/vaillant/technology/vaillant-tech0003.jpg';
+        let PostImgSrc = await assets.getRandomImage('/var/www/html-bublbe/images/www/vaillant/technology');
         PostImgSrc = PostImgSrc.replace(WEBSITE_ROOT_PATH,"");
         let trPostContent = `<img src="${PostImgSrc}" />  ${srcArticle.PREVIEW_TEXT} <hr> ${srcArticle.DETAIL_TEXT}`;
 
