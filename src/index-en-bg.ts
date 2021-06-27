@@ -1,10 +1,12 @@
+// Load custom .env file if CONFIG environment variable is set
+const envconf = process.env.CONFIG ? require('dotenv').config({ path: process.env.CONFIG }) : require('dotenv').config();
+if (envconf.error) {    throw envconf.error; } // ERROR if Config .env file is missing
+
 import * as assets from './assets/assets';
 import {translateApi} from './assets/gtranslate';
 
-//const console = require('./console');
+const console = require('./console');
 const mysql = require('mysql2');
-const {crc16} = require('crc');
-const envconf = require('dotenv').config();
 const cron = require('node-cron');
 
 if (envconf.error) {
@@ -12,15 +14,16 @@ if (envconf.error) {
 } // ERROR if Config .env file is missing
 
 const Categories = [
-    {
-        langDB: 'ru-RU',
-        category: [87, 88, 112, 89, 90, 93],
-        lang: 'ru'
-    },
+
     {   langDB: 'en-GB',
         category: [94, 95, 114, 96, 98, 99],
         lang: 'en'
     },
+    {
+        langDB: 'bg-BG',
+        category: [180, 181, 182, 183, 184, 185],
+        lang: 'bg'
+    }
 ];
 
 
@@ -53,7 +56,7 @@ const main = async (): Promise<string> => {
 
         let srcArticleId = null;
         let srcArticle;
-        while (!srcArticleId) {
+        while (!srcArticleId && srcArrFiltered.length>0) {
             // Fetch Article from DB
              srcArticleId = srcArrFiltered[0].id;
             sql = `SELECT * FROM os0fr_content WHERE id = '${srcArticleId}'`;
@@ -64,6 +67,7 @@ const main = async (): Promise<string> => {
             if (aText.indexOf('<table')>=0) { srcArrFiltered.shift(); srcArticleId = null; continue;}
             if (aText.indexOf('watch?v=')>=0) { srcArrFiltered.shift(); srcArticleId = null; continue;}
         }
+        if (!srcArticleId) return "ALL DATA TRANSLATED";
 
         const srcArticleCatId = srcArticle['catid'];
         const trArticleCatId = Categories[1].category[Categories[0].category.indexOf(srcArticleCatId)];
@@ -73,8 +77,12 @@ const main = async (): Promise<string> => {
         let extrImg = regexImg.exec(PostContent);
         let PostImgSrc = extrImg !== null ? extrImg[1] : "";
 
+        // remove "Source"
+        PostContent = PostContent.replace(/source.*?<\/p>/igm,'</p>');
 
-        PostContent = PostContent.replace(/<a\/?[^>]+>|<\/a>/igs,'');        // Strip ALL <a> tags from text but leave inner text.
+        PostContent = PostContent.replace(/<a\/?[^>]+>|<\/a>/igm,'');        // Strip ALL <a> tags from text but leave inner text.
+        PostContent = PostContent.replace(/<span\/?[^>]+>|<\/span>/igm,'');    // Strip ALL <span> tags from text but leave inner text.
+
         //PostContent = PostContent.replace(/<p>|<\/p>/igs,'');        // Strip ALL <p> tags from text but leave inner text.
         PostContent = PostContent.replace(/<img.*?>/igs, '');        // Strip ALL <img>
         PostContent = PostContent.replace(/<hr.*?>/igs, '');        // Strip ALL <hr>
@@ -92,6 +100,12 @@ const main = async (): Promise<string> => {
         PostContent = PostContent.replace(/\&lt\;/igs, '');
         PostContent = PostContent.replace(/\&gt\;/igs, '');
         PostContent = PostContent.replace(/\&amp\;/igs, '');
+        PostContent = PostContent.replace(/\&hellip\;/igs, '.');
+
+        PostContent = PostContent.replace(/\./g, '. ');
+        PostContent = PostContent.replace(/([?!])/g,'$1 ');
+
+
 
         translateApi.setToken(process.env.BEARER || 'default_Bearer');
         let PostTitle: string = await translateApi.translate({tl: Categories[1].lang, text: srcArticle['title']});
@@ -101,14 +115,32 @@ const main = async (): Promise<string> => {
 
         await assets.wait(2000);
         let tr_text = await  translateApi.translate({tl: Categories[1].lang, text: PostContent});
+        if (tr_text.length < 10) return 'Translation less 10 chars';
 
         // correct translated text
-        tr_text = tr_text.replace(/\<.?\/.?P>/igms, '</p>');
-        tr_text = tr_text.replace(/\<.?\/.?p>/igms, '</p>');
-        tr_text = tr_text.replace(/\<\s\/P>/igms, '</p>');
-        tr_text = tr_text.replace(/\<\sP>/igms, '<p>');
-        tr_text = tr_text.replace(/\<\sP\s>/igms, '<p>');
-        tr_text = tr_text.replace(/\<.?\/.?span>/igms, '</span>');
+        /*tr_text = tr_text.replace(/\<.?\/.?P>/igm, '</p>');
+        tr_text = tr_text.replace(/\<.?\/.?p>/igm, '</p>');
+        tr_text = tr_text.replace(/\<.?p>/igm, '<p>');
+        tr_text = tr_text.replace(/\<\s\/P>/igm, '</p>');
+        tr_text = tr_text.replace(/\<\sP>/igm, '<p>');
+        tr_text = tr_text.replace(/\<\sP\s>/igm, '<p>');
+        tr_text = tr_text.replace(/\<P>/igm, '<p>');*/
+        // Буква Р русская
+        tr_text = tr_text.replace(/<.?Р.?>/igm, '<p>');
+        tr_text = tr_text.replace(/<.?\/Р.?>/igm, '</p>');
+        tr_text = tr_text.replace(/<.?р.?>/igm, '<p>');
+        tr_text = tr_text.replace(/<.?\/р.?>/igm, '</p>');
+        PostTitle = PostTitle.replace(/<.?р.?>/igm, '');
+        PostTitle = PostTitle.replace(/<.?\/р.?>/igm, '');
+
+        //tr_text = tr_text.replace(/\<.?\/.?span>/igms, '</span>');
+
+        tr_text = tr_text.replace(/\&?.?livre;/igs, '€');
+
+        tr_text = tr_text.replace(/\.\,/igms, '.');
+        tr_text = tr_text.replace(/\,\./igms, '.');
+        tr_text = tr_text.replace(/\s\,/igm, ',');
+        tr_text = tr_text.replace(/\s\./igm, '.');
 
         //if (tr_text.length < 2000) {tr_text.replace(/\./igs, '</p><p>');};
 

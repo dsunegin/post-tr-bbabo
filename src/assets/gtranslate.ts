@@ -4,7 +4,7 @@ import {Api} from "axios-es6-class";
 // this are the minimun properties the Api class expect
 let apiConfig: AxiosRequestConfig = {
     timeout: 60000,
-    baseURL: "https://bbabo.net"
+    baseURL: process.env.TRANSLATE_BASEURL
 };
 export interface  translateData{
     sl?: string,

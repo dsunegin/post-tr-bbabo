@@ -55,7 +55,7 @@ const main = async (): Promise<string> => {
 
         let srcArticleId = null;
         let srcArticle;
-        while (!srcArticleId) {
+        while (!srcArticleId && srcArrFiltered.length>0) {
             // Fetch Article from DB
              srcArticleId = srcArrFiltered[0].id;
             sql = `SELECT * FROM os0fr_content WHERE id = '${srcArticleId}'`;
@@ -66,6 +66,7 @@ const main = async (): Promise<string> => {
             if (aText.indexOf('<table')>=0) { srcArrFiltered.shift(); srcArticleId = null; continue;}
             if (aText.indexOf('watch?v=')>=0) { srcArrFiltered.shift(); srcArticleId = null; continue;}
         }
+        if (!srcArticleId) return "ALL DATA TRANSLATED";
         //const aliasq = assets.aliasSlug(srcArticle['title']);
         const srcArticleCatId = srcArticle['catid'];
         const trArticleCatId = Categories[1].category[Categories[0].category.indexOf(srcArticleCatId)];
@@ -76,7 +77,9 @@ const main = async (): Promise<string> => {
         let PostImgSrc = extrImg !== null ? extrImg[1] : "";
 
 
-        PostContent = PostContent.replace(/<a\/?[^>]+>|<\/a>/igs,'');        // Strip ALL <a> tags from text but leave inner text.
+        PostContent = PostContent.replace(/<a\/?[^>]+>|<\/a>/igms,'');        // Strip ALL <a> tags from text but leave inner text.
+        PostContent = PostContent.replace(/<span\/?[^>]+>|<\/span>/igms,'');    // Strip ALL <span> tags from text but leave inner text.
+
         //PostContent = PostContent.replace(/<p>|<\/p>/igs,'');        // Strip ALL <p> tags from text but leave inner text.
         PostContent = PostContent.replace(/<img.*?>/igs, '');        // Strip ALL <img>
         PostContent = PostContent.replace(/<hr.*?>/igs, '');        // Strip ALL <hr>

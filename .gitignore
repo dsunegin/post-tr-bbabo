@@ -1,6 +1,7 @@
 .idea
 tmp
 build
+.env.*
 
 static-site-generator
 
