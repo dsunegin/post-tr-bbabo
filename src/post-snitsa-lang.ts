@@ -1,28 +1,41 @@
 import * as assets from './assets/assets';
 import {translateApi} from './assets/gtranslate';
 
-const console = require('./console');
+//const console = require('./console');
 const mysql = require('mysql2');
 const {crc16} = require('crc');
-const envconf = require('dotenv').config();
 const cron = require('node-cron');
 //const path = require('path');
+const srcCategory =
+    {   langDB: 'ru-RU',
+        category: 89,
+        lang: 'ru'
+    };
 
-if (envconf.error) {
-    throw envconf.error;
-} // ERROR if Config .env file is missing
+const envconf = process.env.CONFIG ? require('dotenv').config({ path: process.env.CONFIG }) : require('dotenv').config();
+if (envconf.error) {    throw envconf.error;} // ERROR if Config .env file is missing
 
 const Categories = [
-
-    {   langDB: 'en-GB',
-        category: [94, 95, 114, 96, 98, 99],
-        lang: 'en'
-    },
     {
-        langDB: 'be-BY',
-        category: [160, 161, 162, 163, 164, 165],
-        lang: 'be'
+        langDB: 'uk-UA',
+        category: 104,
+        lang: 'uk',
+        title: 'До чого сниться ',
+        hrefNext: 'Значення снів про '
     }
+    /* pl: {   langDB: 'pl-PL',
+         category: 173,
+         lang: 'pl'
+     },
+     {   langDB: 'en-GB',
+         category: 96,
+         lang: 'en'
+     },
+     {
+         langDB: 'be-BY',
+         category: 163,
+         lang: 'be'
+     }*/
 ];
 
 
@@ -39,14 +52,16 @@ const connectionPRESS = mysql
 
 const main = async (): Promise<string> => {
     try {
-        const inClauseSrc = Categories[0].category.map(id=>"'"+id+"'").join();
-        let sql = `SELECT id, catid FROM os0fr_content WHERE catid IN (${inClauseSrc}) && id < 35364 ORDER BY id ASC`;
+        const Lang: string = process.env.LANG ? process.env.LANG : 'uk';
+        //const inClauseSrc = Categories[0].category.map(id=>"'"+id+"'").join();
+        const Category = Categories.find( item => {return item.lang == Lang});
+        let sql = `SELECT id, catid FROM os0fr_content WHERE catid = ${srcCategory.category} && note = 'snitsa' ORDER BY id ASC`;
         let result = await connectionPRESS.query(sql);
 
         if (result[0].length == 0) return "NO Source Articles DATA";
         const srcArr = result[0];
 
-        sql = `SELECT id, translate_from FROM os0fr_content WHERE translate_from > 0 && language='${Categories[1].langDB}'`;
+        sql = `SELECT id, translate_from FROM os0fr_content WHERE translate_from > 0 && language='${Category?.langDB}' && note = 'horoscope'`;
         result = await connectionPRESS.query(sql);
 
         const TranslatedArr = result[0];
@@ -69,7 +84,8 @@ const main = async (): Promise<string> => {
         if (!srcArticleId) return "ALL DATA TRANSLATED";
 
         const srcArticleCatId = srcArticle['catid'];
-        const trArticleCatId = Categories[1].category[Categories[0].category.indexOf(srcArticleCatId)];
+        const trArticleCatId = Category?.category;
+        //const trArticleCatId = Categories[1].category[Categories[0].category.indexOf(srcArticleCatId)];
 
         let PostContent = srcArticle['introtext'] + srcArticle['fulltext'];
         const  regexImg= /<img.*?src=\"(.*?)\"/gs;

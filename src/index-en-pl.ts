@@ -43,7 +43,7 @@ const main = async (): Promise<string> => {
         if (result[0].length == 0) return "NO Source Articles DATA";
         const srcArr = result[0];
 
-        sql = `SELECT id, translate_from FROM os0fr_content WHERE translate_from > 0 && language='${Categories[1].langDB}'`;
+        sql = `SELECT id, translate_from FROM os0fr_content WHERE translate_from > 0 && language='${Categories[1].langDB}' && note = ''`;
         result = await connectionPRESS.query(sql);
 
         const TranslatedArr = result[0];
